@@ -164,17 +164,19 @@ if country_df is not None and not country_df.empty:
 else:
     st.warning("No country data available for pie chart")
 # Growth Chart
-if monthly_df is not None and not monthly_df.empty:
-
     monthly_df["growth"] = monthly_df["sales"].pct_change()
-
-    fig, ax = plt.subplots()
-    ax.plot(monthly_df["month"], monthly_df["growth"])
-
-    plt.xticks(rotation=45)
-
-    st.pyplot(fig)
-
+    fig = px.line(
+        monthly_df,
+        x="month",
+        y="growth",
+        markers=True,
+        title="Monthly Growth Rate"
+    )
+# Hover customize
+    fig.update_traces(
+        hovertemplate="<b>Month:</b> %{x}<br><b>Growth:</b> %{y:.2%}"
+    )
+    st.plotly_chart(fig, width='stretch')
 # Data Check
 st.subheader("Data Quality Check")
 if st.button("Check Errors"):
