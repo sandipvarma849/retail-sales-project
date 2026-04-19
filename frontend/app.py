@@ -132,12 +132,20 @@ if monthly_df is not None:
     st.plotly_chart(fig, width='stretch')
 
 # Scatter
-if monthly_df is not None and not monthly_df.empty:
-
-    fig, ax = plt.subplots()
-    ax.scatter(monthly_df.index, monthly_df["sales"])
-
-    st.pyplot(fig)
+import plotly.express as px
+if monthly_df is not None:
+    st.subheader("Sales Pattern")
+    fig = px.scatter(
+        monthly_df,
+        x=monthly_df.index,
+        y="sales",
+        title="Sales Pattern"
+    )
+# Hover customize
+    fig.update_traces(
+        hovertemplate="<b>Index:</b> %{x}<br><b>Sales:</b> %{y}"
+    )
+    st.plotly_chart(fig, width='stretch')
 
 # Pie Chart
 import plotly.express as px
