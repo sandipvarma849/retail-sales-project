@@ -9,7 +9,7 @@ app = FastAPI(title="Retail Sales Data Analytics API")
 
 # Load Dataset
 try:
-    df = pd.read_excel("https://drive.google.com/uc?id=1h5bTQG-LFDzfLjXeHIFVLGVqe_TsAIIV")
+    df = pd.read_excel("E-Commerce Retail Sales Dataset.xlsx")
 except Exception as e:
     df = pd.DataFrame()
     print("Error loading dataset:", e)
