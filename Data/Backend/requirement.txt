@@ -3,4 +3,5 @@ uvicorn
 pandas
 scipy
 scikit-learn
+numpy
 openpyxl
