@@ -33,33 +33,24 @@ if selected_country == "All":
     summary = fetch_data("summary")
 else:
     summary = fetch_data(f"filtered-sales?country={selected_country}")
-
 st.subheader("Overview")
-
 col1, col2, col3 = st.columns(3)
-
 col1.metric("Total Orders", summary.get("total_orders", 0))
 col2.metric("Total Products", summary.get("total_products", 0))
 col3.metric("Total Sales", round(summary.get("total_sales", 0), 2))
 
 # Monthly Sales
 import plotly.express as px
-
 monthly_sales = fetch_data("monthly-sales")
-
 monthly_df = None
-
 if isinstance(monthly_sales, list) and len(monthly_sales) > 0:
     monthly_df = pd.DataFrame(monthly_sales)
-
     st.subheader("Monthly Sales Trend")
-
     fig = px.line(
         monthly_df,
         x="month",
         y="sales",
-        markers=True, 
-        title="Monthly Sales Trend"
+        markers=True
     )
 
     # Hover
@@ -80,8 +71,7 @@ if isinstance(top_products, list) and len(top_products) > 0:
         top_df,
         x="sales",
         y="product",
-        orientation='h',
-        title="Top Selling Products"
+        orientation='h'
     )
 # Hover 
     fig.update_traces(
@@ -103,8 +93,7 @@ if isinstance(country_sales, list) and len(country_sales) > 0:
         country_df,
         x="sales",
         y="country",
-        orientation='h',
-        title="Sales by Country"
+        orientation='h'
     )
 # Hover
     fig.update_traces(
@@ -116,14 +105,12 @@ else:
 
 # Distribution
 import plotly.express as px
-
 if monthly_df is not None:
     st.subheader("Sales Distribution")
     fig = px.histogram(
         monthly_df,
         x="sales",
-        nbins=10,
-        title="Sales Distribution"
+        nbins=10
     )
 # Hover
     fig.update_traces(
@@ -138,9 +125,8 @@ if monthly_df is not None:
     fig = px.scatter(
         monthly_df,
         x=monthly_df.index,
-        y="sales",
-        title="Sales Pattern"
-    )
+        y="sales"
+        )
 # Hover customize
     fig.update_traces(
         hovertemplate="<b>Index:</b> %{x}<br><b>Sales:</b> %{y}"
@@ -149,27 +135,21 @@ if monthly_df is not None:
 
 # Pie Chart
 import plotly.express as px
-
 if country_df is not None and not country_df.empty:
-
     fig = px.pie(
         country_df,
         values="sales",
         names="country",
         title="Sales Share by Country"
     )
-
     st.plotly_chart(fig, width='stretch')
-
 else:
     st.warning("No country data available for pie chart")
+
 # Growth Chart
 import plotly.express as px
-
 if monthly_df is not None and not monthly_df.empty:
-
     monthly_df["growth"] = monthly_df["sales"].pct_change()
-
     fig = px.line(
         monthly_df,
         x="month",
@@ -177,11 +157,9 @@ if monthly_df is not None and not monthly_df.empty:
         title="Monthly Growth Rate",
         markers=True
     )
-
     fig.update_traces(
         hovertemplate="Month: %{x}<br>Growth: %{y:.2%}"
     )
-
     st.plotly_chart(fig, width='stretch')
 
 # Data Check
