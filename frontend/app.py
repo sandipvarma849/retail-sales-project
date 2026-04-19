@@ -43,8 +43,6 @@ col2.metric("Total Products", summary.get("total_products", 0))
 col3.metric("Total Sales", round(summary.get("total_sales", 0), 2))
 
 # Monthly Sales
-import plotly.express as px
-
 monthly_sales = fetch_data("monthly-sales")
 
 monthly_df = None
@@ -52,65 +50,39 @@ monthly_df = None
 if isinstance(monthly_sales, list) and len(monthly_sales) > 0:
     monthly_df = pd.DataFrame(monthly_sales)
 
-    st.subheader("Monthly Sales Trend")
+    fig, ax = plt.subplots()
+    ax.plot(monthly_df["month"], monthly_df["sales"])
+    plt.xticks(rotation=45)
 
-    fig = px.line(
-        monthly_df,
-        x="month",
-        y="sales",
-        markers=True, 
-        title="Monthly Sales Trend"
-    )
-
-    # Hover
-    fig.update_traces(
-        hovertemplate="<b>Month:</b> %{x}<br><b>Sales:</b> %{y}"
-    )
-    st.plotly_chart(fig, width='stretch')
+    st.pyplot(fig)
 else:
     st.warning("Monthly data not available")
 
 # Top Products
-import plotly.express as px
-st.subheader("Top Selling Products")
 top_products = fetch_data("top-products")
+
 if isinstance(top_products, list) and len(top_products) > 0:
     top_df = pd.DataFrame(top_products)
-    fig = px.bar(
-        top_df,
-        x="sales",
-        y="product",
-        orientation='h',
-        title="Top Selling Products"
-    )
 
-# Hover 
-    fig.update_traces(
-        hovertemplate="<b>Product:</b> %{y}<br><b>Sales:</b> %{x}"
-    )
-    st.plotly_chart(fig, width='stretch')
+    fig, ax = plt.subplots()
+    ax.barh(top_df["product"], top_df["sales"])
+
+    st.pyplot(fig)
 else:
     st.warning("Top products not available")
 
 # Country Sales
-import plotly.express as px
-st.subheader("Sales by Country")
 country_sales = fetch_data("sales-by-country")
+
 country_df = None
+
 if isinstance(country_sales, list) and len(country_sales) > 0:
     country_df = pd.DataFrame(country_sales)
-    fig = px.bar(
-        country_df,
-        x="sales",
-        y="country",
-        orientation='h',
-        title="Sales by Country"
-    )
-# Hover
-    fig.update_traces(
-        hovertemplate="<b>Country:</b> %{y}<br><b>Sales:</b> %{x}"
-    )
-    st.plotly_chart(fig, width='stretch')
+
+    fig, ax = plt.subplots()
+    ax.barh(country_df["country"], country_df["sales"])
+
+    st.pyplot(fig)
 else:
     st.warning("Country data not available")
 
@@ -132,55 +104,40 @@ if monthly_df is not None:
     st.plotly_chart(fig, width='stretch')
 
 # Scatter
-import plotly.express as px
-if monthly_df is not None:
-    st.subheader("Sales Pattern")
-    fig = px.scatter(
-        monthly_df,
-        x=monthly_df.index,
-        y="sales",
-        title="Sales Pattern"
-    )
-# Hover customize
-    fig.update_traces(
-        hovertemplate="<b>Index:</b> %{x}<br><b>Sales:</b> %{y}"
-    )
-    st.plotly_chart(fig, width='stretch')
+if monthly_df is not None and not monthly_df.empty:
+
+    fig, ax = plt.subplots()
+    ax.scatter(monthly_df.index, monthly_df["sales"])
+
+    st.pyplot(fig)
 
 # Pie Chart
 import plotly.express as px
-st.subheader("Sales Share by Country")
-fig = px.pie(
-    country_df,
-    values="sales",
-    names="country",
-    title="Sales Share by Country",
-)
-fig.update_traces(
-    textinfo='percent+label',
-    hovertemplate="<b>%{label}</b><br>Sales: %{value}<br>Share: %{percent}"
-)
-st.plotly_chart(fig, width='stretch')
 
-# Growth Chart
-import plotly.express as px
-if monthly_df is not None:
-    st.subheader("Monthly Growth")
+if country_df is not None and not country_df.empty:
 
-# Growth Rate 
-    monthly_df["growth"] = monthly_df["sales"].pct_change()
-    fig = px.line(
-        monthly_df,
-        x="month",
-        y="growth",
-        markers=True,
-        title="Monthly Growth Rate"
+    fig = px.pie(
+        country_df,
+        values="sales",
+        names="country",
+        title="Sales Share by Country"
     )
-# Hover customize
-    fig.update_traces(
-        hovertemplate="<b>Month:</b> %{x}<br><b>Growth:</b> %{y:.2%}"
-    )
+
     st.plotly_chart(fig, width='stretch')
+
+else:
+    st.warning("No country data available for pie chart")
+# Growth Chart
+if monthly_df is not None and not monthly_df.empty:
+
+    monthly_df["growth"] = monthly_df["sales"].pct_change()
+
+    fig, ax = plt.subplots()
+    ax.plot(monthly_df["month"], monthly_df["growth"])
+
+    plt.xticks(rotation=45)
+
+    st.pyplot(fig)
 
 # Data Check
 st.subheader("Data Quality Check")
