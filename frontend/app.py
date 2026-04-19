@@ -93,17 +93,24 @@ else:
 
 
 # Country Sales
+import plotly.express as px
+st.subheader("Sales by Country")
 country_sales = fetch_data("sales-by-country")
-
 country_df = None
-
 if isinstance(country_sales, list) and len(country_sales) > 0:
     country_df = pd.DataFrame(country_sales)
-
-    fig, ax = plt.subplots()
-    ax.barh(country_df["country"], country_df["sales"])
-
-    st.pyplot(fig)
+    fig = px.bar(
+        country_df,
+        x="sales",
+        y="country",
+        orientation='h',
+        title="Sales by Country"
+    )
+# Hover
+    fig.update_traces(
+        hovertemplate="<b>Country:</b> %{y}<br><b>Sales:</b> %{x}"
+    )
+    st.plotly_chart(fig, width='stretch')
 else:
     st.warning("Country data not available")
 
