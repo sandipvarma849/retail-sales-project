@@ -71,17 +71,26 @@ else:
     st.warning("Monthly data not available")
 
 # Top Products
+import plotly.express as px
+st.subheader("Top Selling Products")
 top_products = fetch_data("top-products")
-
 if isinstance(top_products, list) and len(top_products) > 0:
     top_df = pd.DataFrame(top_products)
-
-    fig, ax = plt.subplots()
-    ax.barh(top_df["product"], top_df["sales"])
-
-    st.pyplot(fig)
+    fig = px.bar(
+        top_df,
+        x="sales",
+        y="product",
+        orientation='h',
+        title="Top Selling Products"
+    )
+# Hover 
+    fig.update_traces(
+        hovertemplate="<b>Product:</b> %{y}<br><b>Sales:</b> %{x}"
+    )
+    st.plotly_chart(fig, width='stretch')
 else:
     st.warning("Top products not available")
+
 
 # Country Sales
 country_sales = fetch_data("sales-by-country")
