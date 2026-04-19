@@ -43,6 +43,8 @@ col2.metric("Total Products", summary.get("total_products", 0))
 col3.metric("Total Sales", round(summary.get("total_sales", 0), 2))
 
 # Monthly Sales
+import plotly.express as px
+
 monthly_sales = fetch_data("monthly-sales")
 
 monthly_df = None
@@ -50,11 +52,21 @@ monthly_df = None
 if isinstance(monthly_sales, list) and len(monthly_sales) > 0:
     monthly_df = pd.DataFrame(monthly_sales)
 
-    fig, ax = plt.subplots()
-    ax.plot(monthly_df["month"], monthly_df["sales"])
-    plt.xticks(rotation=45)
+    st.subheader("Monthly Sales Trend")
 
-    st.pyplot(fig)
+    fig = px.line(
+        monthly_df,
+        x="month",
+        y="sales",
+        markers=True, 
+        title="Monthly Sales Trend"
+    )
+
+    # Hover
+    fig.update_traces(
+        hovertemplate="<b>Month:</b> %{x}<br><b>Sales:</b> %{y}"
+    )
+    st.plotly_chart(fig, width='stretch')
 else:
     st.warning("Monthly data not available")
 
